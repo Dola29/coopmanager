@@ -1,2 +1,2 @@
 # coopmanager
-Systema gestor de procesos de coperativas
+Sistema gestor de procesos de coperativas
