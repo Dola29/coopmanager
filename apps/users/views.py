@@ -1,6 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.status import HTTP_201_CREATED
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 from .serializers import UserSerializer
 from .models import User
 import jwt, datetime
@@ -11,7 +14,7 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
 class LoginView(APIView):
     def post(self, request):
