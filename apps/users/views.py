@@ -2,8 +2,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.status import HTTP_201_CREATED
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
 from .serializers import UserSerializer
 from .models import User
 import jwt, datetime
@@ -38,6 +36,7 @@ class LoginView(APIView):
         token = jwt.encode(payload, 'secret', algorithm="HS256")
         
         response =  Response()
+        response.headers['authorization'] = token
         response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {'jwt': token}
 
@@ -45,7 +44,7 @@ class LoginView(APIView):
 
 class UserView(APIView):
     def get(self, request):
-        token = request.COOKIES.get('jwt')
+        token = request.headers['Authorization']
 
         if not token:
             raise AuthenticationFailed('Unauthenticated!')
