@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 class Role(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -39,7 +40,6 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
 class User(AbstractBaseUser, PermissionsMixin):
     """Modelo de usuarios"""
     name = models.CharField(max_length=255)
@@ -47,6 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     password = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True)
     
