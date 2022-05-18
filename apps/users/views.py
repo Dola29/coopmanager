@@ -2,19 +2,25 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.status import HTTP_201_CREATED
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
-from .serializers import UserSerializer
-from .models import User
+from .serializers import UserSerializer, UserListSerializer
+from .models import User, Role
 import jwt, datetime
+import json
 # Create your views here.
 
 class RegisterView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=HTTP_201_CREATED)
+        email = request.data['email']
+
+        user = User.objects.filter(email = email).first()
+
+        if user is None:
+            serializer = UserSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+        else:
+            raise AuthenticationFailed('Este usuario ya existe en nuestros resgistros')
 
 class LoginView(APIView):
     def post(self, request):
@@ -38,13 +44,18 @@ class LoginView(APIView):
         token = jwt.encode(payload, 'secret', algorithm="HS256")
         
         response =  Response()
-        response.set_cookie(key='jwt', value=token, httponly=True)
-        response.data = {'jwt': token}
+        response.headers['Authorization'] = token
+        response.set_cookie(key='jwt', value = token, httponly=True)
+
+        response.data = {
+            'jwt': token
+        }
 
         return response
 
 class UserView(APIView):
     def get(self, request):
+
         token = request.COOKIES.get('jwt')
 
         if not token:
@@ -67,3 +78,24 @@ class LogoutView(APIView):
             'message': 'success'
         }
         return response
+
+class RolesGetList(APIView):
+    def get(self, request):
+        response = Response()
+        data = Role.objects.extra(
+            select={
+                'value' : 'id',
+                'label' : 'name'
+            }
+        ).values(
+            'value',
+            'label'
+        )
+        response.data = data
+        return response
+
+class UsersListView(APIView):
+    def get(self, request):
+        data = User.objects.all()
+        serializer = UserListSerializer(data, many=True)
+        return Response(serializer.data)
