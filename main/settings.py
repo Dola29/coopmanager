@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -80,22 +82,23 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'coopmanager',
-#         'USER': 'root',
-#         'PASSWORD': ''
-#     }
-# }
-
-import dj_database_url
-from decouple import config
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('COOPDB_URL')
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'coopmanager',
+        'USER': 'root',
+        'PASSWORD': ''
+    }
 }
+
+
+DATABASES['default'] = dj_database_url.parse('mysql://b363778227260d:63ebc3fd@us-cdbr-east-05.cleardb.net/heroku_5e85073b7a2f02f')
+# from decouple import config
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('COOPDB_URL')
+#     )
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -142,11 +145,11 @@ AUTH_USER_MODEL = 'users.User'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/STATIC/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_URL = '/STATIC/'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
 
-ESTATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# ESTATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

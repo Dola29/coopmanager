@@ -1,3 +1,5 @@
+
+from django.db.models.deletion import CASCADE
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
@@ -47,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    role = models.ForeignKey(Role, on_delete=models.CASCADE, null=True)
+    role = models.ForeignKey(Role, on_delete=CASCADE, null=True)
     
     objects = UserProfileManager()
 
